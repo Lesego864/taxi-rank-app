@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taxi Rank App</title>
+    <link rel="stylesheet" href="simple-grid.css">
+    <script defer src="index.js"></script>
+    <script defer src="https://unpkg.com/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- <script defer src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.0/dist/alpine.min.js"></script> -->
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h1>Welcome To The Cape Townian Taxi Rank Application!</h1>
+                <h4>Get to your destinations safely and with style & comfort with our 14 seater Toyota Quantum Buses😜!!</h4>
+            </div>
+        </div>
+
+        <div class="row">
+
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div x-data=" {rankInfo: $persist([
+                    { depature: 'Cape Town', destination: 'Belhar', queue: 34, count: 0, taxiFare: 13.00, totalTaxiFare: 0, availableTaxi: 10 },
+                    { depature: 'Cape Town', destination: 'Bellville', queue: 23, count: 0, taxiFare: 12.50, totalTaxiFare: 0, availableTaxi: 10 },
+                    { depature: 'Cape Town', destination: 'Makhaza', queue: 12, count: 0, taxiFare: 15.00, totalTaxiFare: 0, availableTaxi: 10 }]), newDestination: '', newFare: '', newQueue: '', newDepature: ''}">
+
+                    <div class="addDestination">
+                        <div x-data="{ open: false }">
+                            <button @click="open = ! open">Add new routes and destinations</button>
+                            <br>
+                            <div x-show="open">
+                                <p>&nbsp;&nbsp;&nbsp;Depature Rank: &nbsp;&nbsp;&nbsp;&nbsp;<input class="depature" type="text" x-model="newDepature"></p>
+                                <p> &emsp;&emsp;Destination: &emsp;<input class="destination" type="text" x-model="newDestination"></p>
+                                <p>&emsp;&emsp;&emsp;&emsp;&emsp;Fare: &emsp;<input type="text" x-model.number="newFare"></p>
+                                <br>
+                                <button @click="rankInfo.push({depature:newDepature, destination:newDestination, queue:0, count:0, taxiFare:newFare, totalTaxiFare:0, availableTaxi: 10})">Add new taxi!</button>
+
+
+                            </div>
+                        </div>
+
+                    </div>
+
+
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Depature Rank</th>
+                                <th scope="col">Final Destination</th>
+                                <th scope="col">No. of people in line</th>
+                                <th scope="col">Click when taxi full (i.e 14 people inside)</th>
+                                <th scope="col">No. of trips taken</th>
+                                <th scope="col">Taxi Fare per person</th>
+                                <th scope="col">Total Fare per taxi</th>
+                                <th scope="col">Available Taxis</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <template x-for="rank in rankInfo">
+                            <tr>
+                                <td>
+                                    <p x-text=" rank.depature "></p>
+                                </td>
+                                <td>
+                                    <p x-text="rank.destination "></p>
+                                </td>
+                                
+            
+                                <td>
+                                    
+                            <button @click="rank.queue++">+</button>
+                            <template x-if="rank.queue > 0">
+                                <button  @click="rank.queue--">-</button>
+                            </template>
+                            <strong><span x-text="rank.queue "></span></strong>
+
+
+
+                            </td>
+
+                            <td>
+                                <template x-if="rank.queue > 13 && rank.availableTaxi > 0">
+                                    <button @click="rank.queue=rank.queue - taxiRiders, rank.count++, rank.totalTaxiFare += (rank.taxiFare * taxiRiders), rank.availableTaxi--"><strong style="color: #CAD2C5;">Taxi Full!</strong></button>
+                                    </template>
+
+                                <template x-if="14 > rank.queue || 1 > rank.availableTaxi">
+                                        <button disabled @click="rank.queue=rank.queue - taxiRiders, rank.count++, rank.totalTaxiFare += (rank.taxiFare * taxiRiders), rank.availableTaxi--" style="color: #52796F; font-weight: bolder; box-shadow: none; cursor:not-allowed;">Taxi Not Full!</button>
+                                    </template>
+                            </td>
+
+                            <td>
+                                <p x-text="rank.count"></p>
+                            </td>
+
+                            <td>
+                                R<span x-text="rank.taxiFare.toFixed(2)"></span>
+                            </td>
+
+                            <td>
+                                R<span x-text="rank.totalTaxiFare.toFixed(2)"></span>
+                            </td>
+
+                            <td>
+                                <button @click="rank.availableTaxi++">Add extra taxis</button>
+                                <strong><span x-text="rank.availableTaxi"></span></strong>
+
+
+                            </td>
+
+                            </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                    <br>
+
+                    <strong style="font-size: 1.3em;">Cape Townian Taxi Rank has made a total of R <span x-text="_.sumBy(rankInfo, function(rank) {return rank.totalTaxiFare}).toFixed(2)" style="color: #CAD2C5;"></span> for the day🚐🚐</strong>
+
+                    <br>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="footer">
+                    <h5>Lesego Tshipu | Taxi Rank Application | Google Work Incubation 2022</h5>
+                </div>
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+</body>
+
+</html>
